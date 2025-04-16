@@ -1,13 +1,16 @@
 package com.example.hotelManagement.user;
 
+import jakarta.transaction.Transactional;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.stereotype.Service;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.logging.Logger;
 
 @Service
 public class UserServiceImplementor implements UserService{
@@ -20,9 +23,17 @@ public class UserServiceImplementor implements UserService{
     }
 
     @Override
+    @Transactional
     public void createUser(Users users) {
-        userRepository.save(users);
-        userRepository.flush();
+        try {
+            userRepository.save(users);
+            userRepository.flush();
+        }
+       catch (OptimisticLockingFailureException e){
+           Logger.getLogger("Concurrency conflict: --OptimisticLockingFailureException-- "+e.getMessage());
+           throw new OptimisticLockingFailureException("OptimisticLockingFailureException concurrency conflict: --OptimisticLockingFailureException-- "+e.getMessage());
+       }
+
 
     }
 

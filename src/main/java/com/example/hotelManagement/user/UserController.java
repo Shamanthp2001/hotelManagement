@@ -16,8 +16,8 @@ public class UserController {
     ModelMapper modelMapper;
     @PostMapping
     public String createUser(@RequestBody Users users) {
-//        Users users =modelMapper.map(userDto, Users.class);
-        userService.createUser(users);
+        Users user =modelMapper.map(users, Users.class);
+        userService.createUser(user);
         return "User created";
     }
     @GetMapping
